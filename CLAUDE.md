@@ -86,8 +86,34 @@ struct FeatureName {
 ### Dependencies
 - Use `@DependencyClient` for external dependencies
 - Register with `DependencyKey` protocol
-- Live, test, and preview values required
+- **Only provide `liveValue`** - NO `testValue` in dependency clients
+- Test values should be defined in test files using `withDependencies`
 - Access via `@Dependency(\.keyPath)` in reducers
+
+#### Testing Dependencies
+```swift
+// ❌ Do NOT define testValue in dependency clients
+extension CameraClient: DependencyKey {
+    static let liveValue: CameraClient = { /* live implementation */ }()
+    // static let testValue = ... // NEVER do this
+}
+
+// ✅ Define test mocks in test files using withDependencies
+@Test func testCameraPermission() async throws {
+    let result = await withDependencies {
+        $0.camera = CameraClient(
+            requestPermission: { true },
+            startScanning: { AsyncStream<String> { _ in } },
+            stopScanning: { }
+        )
+    } operation: {
+        @Dependency(\.camera) var camera
+        return await camera.requestPermission()
+    }
+    
+    #expect(result == true)
+}
+```
 
 ### State Management
 - Use `@ObservableState` for iOS 17+ compatibility
@@ -144,6 +170,38 @@ This project follows **Test-Driven Development (TDD)** methodology:
 - Test public interfaces, not implementation details
 - Use TCA TestStore for comprehensive state testing
 - Mock dependencies for isolated testing
+
+### Mandatory TDD Workflow
+**ALWAYS follow this exact sequence when developing new features:**
+
+1. **Red Phase** - Write failing tests first:
+   ```bash
+   # 1. Write test code
+   # 2. Ensure project builds successfully
+   xcodebuild -project Pochi.xcodeproj -scheme Pochi -destination 'platform=iOS Simulator,name=iPhone 16' build
+   
+   # 3. Run tests and CONFIRM they FAIL
+   xcodebuild -project Pochi.xcodeproj -scheme Pochi -destination 'platform=iOS Simulator,name=iPhone 16' test
+   ```
+   
+2. **Green Phase** - Write minimal implementation:
+   ```bash
+   # 4. Write minimal code to make tests pass
+   # 5. Run tests and confirm they PASS
+   xcodebuild test
+   ```
+   
+3. **Refactor Phase** - Improve code while keeping tests green
+
+**⚠️ CRITICAL RULE: Never write implementation code without first having a failing test that builds successfully. This ensures tests are actually testing the implementation, not just passing by accident.**
+
+#### TDD Verification Checklist
+Before implementing any feature, verify:
+- [ ] Tests are written and compile successfully
+- [ ] Project builds without errors (`xcodebuild build`)  
+- [ ] Tests fail as expected (`xcodebuild test` shows failures)
+- [ ] Test failure messages clearly indicate what needs to be implemented
+- [ ] Only then proceed with implementation
 
 ## Localization
 

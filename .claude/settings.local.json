@@ -20,7 +20,8 @@
       "mcp__XcodeBuildMCP__screenshot",
       "mcp__XcodeBuildMCP__stop_app_sim",
       "mcp__XcodeBuildMCP__clean_proj",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(open:*)"
     ],
     "deny": []
   }

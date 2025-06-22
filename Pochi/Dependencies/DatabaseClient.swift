@@ -71,18 +71,6 @@ extension DatabaseClient: DependencyKey {
     )
   }()
   
-  static let testValue = DatabaseClient(
-    fetchItems: { [] },
-    saveItem: { _ in },
-    updateItem: { _ in },
-    deleteItem: { _ in },
-    fetchItem: { _ in nil },
-    fetchShoppingItems: { [] },
-    saveShoppingItem: { _ in },
-    updateShoppingItem: { _ in },
-    deleteShoppingItem: { _ in },
-    clearAllData: { }
-  )
 }
 
 extension DependencyValues {
