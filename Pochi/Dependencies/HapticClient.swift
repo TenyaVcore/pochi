@@ -53,11 +53,6 @@ extension HapticClient: DependencyKey {
         }
     )
 
-    static let testValue = HapticClient(
-        impact: { _ in },
-        notification: { _ in },
-        selection: { }
-    )
 }
 
 extension DependencyValues {

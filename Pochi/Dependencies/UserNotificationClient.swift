@@ -125,14 +125,6 @@ extension UserNotificationClient: DependencyKey {
     )
   }()
   
-  static let testValue = UserNotificationClient(
-    requestAuthorization: { true },
-    getAuthorizationStatus: { .authorized },
-    scheduleExpiryNotification: { _, _ in },
-    cancelNotification: { _ in },
-    cancelAllNotifications: { },
-    getPendingNotifications: { [] }
-  )
 }
 
 extension DependencyValues {
