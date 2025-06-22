@@ -14,7 +14,7 @@ Pochi（ポチ）is an iOS inventory management app built with Swift 6.0 and The
 - **Database**: Core Data
 - **Camera**: AVFoundation
 - **Notifications**: UserNotifications
-- **Minimum iOS**: 15.0
+- **Minimum iOS**: 17.0
 - **Target**: iPhone only
 
 ## Project Structure
@@ -91,7 +91,6 @@ struct FeatureName {
 
 ### State Management
 - Use `@ObservableState` for iOS 17+ compatibility
-- Use `WithPerceptionTracking` for iOS 15-16 support
 - Presentations use `@Presents` property wrapper
 
 ## Domain Models
@@ -131,10 +130,13 @@ This project follows **Test-Driven Development (TDD)** methodology:
 2. **Green**: Write minimal code to pass tests
 3. **Refactor**: Improve code while maintaining tests
 
+### Test Framework
+- **Primary Framework**: Swift Testing (iOS 17+)
+
 ### Test Types
-- **Unit Tests**: TCA TestStore for reducer testing
+- **Unit Tests**: TCA TestStore for reducer testing with Swift Testing
 - **Integration Tests**: Feature interaction testing
-- **UI Tests**: Standard XCTest UI automation
+- **UI Tests**: XCTest UI automation (Swift Testing not yet supported)
 - Target coverage: 80%+
 
 ### TDD Guidelines
