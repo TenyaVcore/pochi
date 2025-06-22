@@ -124,10 +124,24 @@ Predefined categories: refrigerated, frozen, pantry, beverages, snacks, seasonin
 
 ## Testing Strategy
 
+This project follows **Test-Driven Development (TDD)** methodology:
+
+### TDD Process
+1. **Red**: Write failing tests first
+2. **Green**: Write minimal code to pass tests
+3. **Refactor**: Improve code while maintaining tests
+
+### Test Types
 - **Unit Tests**: TCA TestStore for reducer testing
 - **Integration Tests**: Feature interaction testing
 - **UI Tests**: Standard XCTest UI automation
 - Target coverage: 80%+
+
+### TDD Guidelines
+- Write tests before implementing features
+- Test public interfaces, not implementation details
+- Use TCA TestStore for comprehensive state testing
+- Mock dependencies for isolated testing
 
 ## Localization
 
