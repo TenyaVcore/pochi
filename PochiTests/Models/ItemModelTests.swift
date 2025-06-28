@@ -48,7 +48,13 @@ struct ItemModelTests {
         #expect(item.name == "テスト商品")
         #expect(item.category == .pantry)
         #expect(item.quantity == 2)
-        #expect(item.id != UUID()) // ユニークなIDが生成される
+        let anotherItem = Item(
+            name: "別の商品",
+            category: .pantry,
+            quantity: 1
+        )
+        
+        #expect(item.id != anotherItem.id) // ユニークなIDが生成される
         #expect(item.createdAt <= Date()) // 現在時刻以前
         #expect(item.updatedAt <= Date()) // 現在時刻以前
         #expect(item.expiryDate == nil) // デフォルトはnil
