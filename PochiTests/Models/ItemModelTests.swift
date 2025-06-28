@@ -22,12 +22,13 @@ struct ItemModelTests {
         let item = Item(
             id: UUID(),
             name: "牛乳",
-            category: .refrigerated,  // ❌ Category列挙型も存在しない
+            category: .refrigerated,
             quantity: 1,
             expiryDate: Date().addingTimeInterval(86400 * 7), // 1週間後
+            imageData: nil,
+            memo: nil,
             createdAt: Date(),
-            updatedAt: Date(),
-            imageData: nil
+            updatedAt: Date()
         )
         
         #expect(item.name == "牛乳")
@@ -73,9 +74,10 @@ struct ItemModelTests {
             category: .refrigerated,
             quantity: 1,
             expiryDate: nil,
+            imageData: nil,
+            memo: nil,
             createdAt: date,
-            updatedAt: date,
-            imageData: nil
+            updatedAt: date
         )
         
         let item2 = Item(
@@ -84,9 +86,10 @@ struct ItemModelTests {
             category: .refrigerated,
             quantity: 1,
             expiryDate: nil,
+            imageData: nil,
+            memo: nil,
             createdAt: date,
-            updatedAt: date,
-            imageData: nil
+            updatedAt: date
         )
         
         #expect(item1 == item2)

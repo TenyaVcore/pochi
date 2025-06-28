@@ -46,20 +46,20 @@ struct Item: Equatable, Identifiable, Sendable {
 // MARK: - Category
 
 enum Category: String, CaseIterable, Sendable {
-  case refrigerated = "refrigerated"    // 冷蔵
-  case frozen = "frozen"               // 冷凍
-  case pantry = "pantry"               // 常温
-  case beverages = "beverages"         // 飲料
-  case snacks = "snacks"              // お菓子
-  case seasonings = "seasonings"       // 調味料
-  case other = "other"                // その他
+  case refrigerated = "冷蔵"
+  case frozen = "冷凍" 
+  case pantry = "常温"
+  case beverages = "飲み物"
+  case snacks = "お菓子"
+  case seasonings = "調味料"
+  case other = "その他"
   
   var displayName: String {
     switch self {
     case .refrigerated: return "冷蔵"
     case .frozen: return "冷凍"
     case .pantry: return "常温"
-    case .beverages: return "飲料"
+    case .beverages: return "飲み物"
     case .snacks: return "お菓子"
     case .seasonings: return "調味料"
     case .other: return "その他"
