@@ -21,7 +21,11 @@
       "mcp__XcodeBuildMCP__stop_app_sim",
       "mcp__XcodeBuildMCP__clean_proj",
       "Bash(grep:*)",
-      "Bash(open:*)"
+      "Bash(open:*)",
+      "Bash(git checkout:*)",
+      "mcp__XcodeBuildMCP__build_mac_proj",
+      "mcp__XcodeBuildMCP__build_sim_id_proj",
+      "Bash(git add:*)"
     ],
     "deny": []
   }
