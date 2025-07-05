@@ -17,9 +17,10 @@ struct DatabaseClient: Sendable {
   // Items
   var fetchItems: @Sendable () async throws -> [Item]
   var saveItem: @Sendable (Item) async throws -> Void
-  var updateItem: @Sendable (Item) async throws -> Void
+  var updateItem: @Sendable (Item) async throws -> Item
   var deleteItem: @Sendable (UUID) async throws -> Void
   var fetchItem: @Sendable (UUID) async throws -> Item?
+  var updateQuantity: @Sendable (UUID, Int) async throws -> Item
   
   // Shopping Items
   var fetchShoppingItems: @Sendable () async throws -> [ShoppingItem]
@@ -52,6 +53,9 @@ extension DatabaseClient: DependencyKey {
       },
       fetchItem: { id in
         await stack.fetchItem(id)
+      },
+      updateQuantity: { id, quantity in
+        await stack.updateQuantity(id, quantity: quantity)
       },
       fetchShoppingItems: {
         await stack.fetchShoppingItems()
@@ -152,7 +156,7 @@ extension CoreDataStack {
     }
   }
   
-  func update(_ item: Item) async {
+  func update(_ item: Item) async -> Item {
     await withCheckedContinuation { continuation in
       context.perform {
         let request: NSFetchRequest<ItemEntity> = ItemEntity.fetchRequest()
@@ -161,13 +165,17 @@ extension CoreDataStack {
         do {
           let entities = try self.context.fetch(request)
           if let entity = entities.first {
-            entity.fromDomainModel(item)
+            var updatedItem = item
+            updatedItem.updatedAt = Date()
+            entity.fromDomainModel(updatedItem)
             try self.save()
+            continuation.resume(returning: updatedItem)
+          } else {
+            continuation.resume(returning: item)
           }
-          continuation.resume()
         } catch {
           print("Failed to update item: \(error)")
-          continuation.resume()
+          continuation.resume(returning: item)
         }
       }
     }
@@ -205,6 +213,44 @@ extension CoreDataStack {
         } catch {
           print("Failed to fetch item: \(error)")
           continuation.resume(returning: nil)
+        }
+      }
+    }
+  }
+  
+  func updateQuantity(_ id: UUID, quantity: Int) async -> Item {
+    await withCheckedContinuation { continuation in
+      context.perform {
+        let request: NSFetchRequest<ItemEntity> = ItemEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        do {
+          let entities = try self.context.fetch(request)
+          if let entity = entities.first, var item = entity.toDomainModel() {
+            item.quantity = quantity
+            item.updatedAt = Date()
+            entity.fromDomainModel(item)
+            try self.save()
+            continuation.resume(returning: item)
+          } else {
+            // Return a mock item if entity not found
+            let mockItem = Item(
+              id: id,
+              name: "Unknown",
+              category: .other,
+              quantity: quantity
+            )
+            continuation.resume(returning: mockItem)
+          }
+        } catch {
+          print("Failed to update quantity: \(error)")
+          let mockItem = Item(
+            id: id,
+            name: "Unknown",
+            category: .other,
+            quantity: quantity
+          )
+          continuation.resume(returning: mockItem)
         }
       }
     }

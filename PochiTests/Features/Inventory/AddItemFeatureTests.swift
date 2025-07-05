@@ -7,6 +7,7 @@
 
 import Testing
 import ComposableArchitecture
+import Foundation
 @testable import Pochi
 
 /// TDD Red Phase: AddItemFeatureのテスト
@@ -181,7 +182,7 @@ enum TestError: Error {
 extension AddItemFeature.State {
     init(
         name: String = "",
-        category: Category = .refrigerated,
+        category: Pochi.Category = .refrigerated,
         quantity: Int = 1,
         expiryDate: Date? = nil,
         selectedImage: Data? = nil,
