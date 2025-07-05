@@ -115,8 +115,8 @@ final class InventoryE2ETests: XCTestCase {
     /// ❌ このテストは最初は失敗する（UIが未実装のため）
     func testEditItemBasicFlow() throws {
         // 前提: テスト商品が存在する状態
-        testAddItemBasicFlow()
-        
+        try testAddItemBasicFlow()
+
         // 詳細画面へ遷移
         app.staticTexts["テスト商品"].tap()
         
@@ -146,8 +146,14 @@ extension XCUIElement {
         }
         
         self.tap()
-        self.press(forDuration: 1.0)
-        self.typeText(XCUIKeyboardKey.selectAll.rawValue)
+        
+        // Clear existing text by selecting all
+        if let currentValue = self.value as? String, !currentValue.isEmpty {
+            // Triple tap to select all text
+            self.doubleTap()
+            self.tap()
+        }
+        
         self.typeText(text)
     }
 }

@@ -26,7 +26,8 @@
       "mcp__XcodeBuildMCP__build_mac_proj",
       "mcp__XcodeBuildMCP__build_sim_id_proj",
       "Bash(git add:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(swiftc:*)"
     ],
     "deny": []
   }
