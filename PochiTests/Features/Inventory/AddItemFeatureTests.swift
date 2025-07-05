@@ -79,11 +79,10 @@ struct AddItemFeatureTests {
     
     @Test("保存成功テスト")
     func saveSuccess() async throws {
-        let initialState = AddItemFeature.State(
-            name: "牛乳",
-            category: .refrigerated,
-            quantity: 2
-        )
+        var initialState = AddItemFeature.State()
+        initialState.name = "牛乳"
+        initialState.category = .refrigerated
+        initialState.quantity = 2
         
         let store = TestStore(initialState: initialState) {
             AddItemFeature()
@@ -93,7 +92,7 @@ struct AddItemFeatureTests {
                 // モック実装：常に成功
             }
             // ❌ dismiss dependencyが存在しない
-            $0.dismiss = DismissEffect {
+            $0.dismiss = {
                 // モック実装
             }
         }
@@ -108,18 +107,17 @@ struct AddItemFeatureTests {
             quantity: 2
         )
         
-        await store.receive(.saveResponse(.success(expectedItem))) {
+        await store.receive(\.saveResponse.success) {
             $0.isLoading = false
         }
     }
     
     @Test("保存失敗テスト")
     func saveFailure() async throws {
-        let initialState = AddItemFeature.State(
-            name: "牛乳",
-            category: .refrigerated,
-            quantity: 2
-        )
+        var initialState = AddItemFeature.State()
+        initialState.name = "牛乳"
+        initialState.category = .refrigerated
+        initialState.quantity = 2
         
         let store = TestStore(initialState: initialState) {
             AddItemFeature()
@@ -133,7 +131,7 @@ struct AddItemFeatureTests {
             $0.isLoading = true
         }
         
-        await store.receive(.saveResponse(.failure(TestError.saveFailed))) {
+        await store.receive(\.saveResponse.failure) {
             $0.isLoading = false
             $0.errorMessage = "保存に失敗しました"
         }
@@ -144,7 +142,7 @@ struct AddItemFeatureTests {
         let store = TestStore(initialState: AddItemFeature.State()) {
             AddItemFeature()
         } withDependencies: {
-            $0.dismiss = DismissEffect {
+            $0.dismiss = {
                 // モック実装
             }
         }
@@ -153,15 +151,14 @@ struct AddItemFeatureTests {
         // dismiss effectが実行される
     }
     
-    @Test("バリデーションテスト")
-    func validation() async throws {
+    @Test("バリデーションテスト - 商品名必須")
+    func validationNameRequired() async throws {
         let store = TestStore(initialState: AddItemFeature.State()) {
             AddItemFeature()
         }
         
         // 商品名が空の場合の保存試行
         await store.send(.view(.saveTapped)) {
-            // ❌ validationErrorsプロパティが存在しない
             $0.validationErrors.insert(.nameRequired)
         }
         
@@ -169,6 +166,79 @@ struct AddItemFeatureTests {
         await store.send(.view(.nameChanged("牛乳"))) {
             $0.name = "牛乳"
             $0.validationErrors.remove(.nameRequired)
+        }
+    }
+    
+    @Test("バリデーションテスト - 商品名文字数制限")
+    func validationNameLength() async throws {
+        let store = TestStore(initialState: AddItemFeature.State()) {
+            AddItemFeature()
+        }
+        
+        // 51文字の商品名を入力（制限を超える）
+        let longName = String(repeating: "あ", count: 51)
+        await store.send(.view(.nameChanged(longName))) {
+            $0.name = longName
+            $0.validationErrors.insert(.nameTooLong)
+        }
+        
+        // 50文字の商品名を入力（制限内）
+        let validName = String(repeating: "あ", count: 50)
+        await store.send(.view(.nameChanged(validName))) {
+            $0.name = validName
+            $0.validationErrors.remove(.nameTooLong)
+        }
+    }
+    
+    @Test("バリデーションテスト - 数量範囲")
+    func validationQuantityRange() async throws {
+        let store = TestStore(initialState: AddItemFeature.State()) {
+            AddItemFeature()
+        }
+        
+        // 0以下の数量
+        await store.send(.view(.quantityChanged(0))) {
+            $0.quantity = 0
+            $0.validationErrors.insert(.quantityInvalid)
+        }
+        
+        // 1000以上の数量
+        await store.send(.view(.quantityChanged(1000))) {
+            $0.quantity = 1000
+            $0.validationErrors.insert(.quantityInvalid)
+        }
+        
+        // 有効な数量
+        await store.send(.view(.quantityChanged(10))) {
+            $0.quantity = 10
+            $0.validationErrors.remove(.quantityInvalid)
+        }
+    }
+    
+    @Test("バリデーションテスト - 賞味期限")
+    func validationExpiryDate() async throws {
+        let store = TestStore(initialState: AddItemFeature.State()) {
+            AddItemFeature()
+        }
+        
+        // 過去の日付
+        let pastDate = Date().addingTimeInterval(-86400) // 1日前
+        await store.send(.view(.expiryDateChanged(pastDate))) {
+            $0.expiryDate = pastDate
+            $0.validationErrors.insert(.expiryDateInvalid)
+        }
+        
+        // 現在以降の日付
+        let futureDate = Date().addingTimeInterval(86400) // 1日後
+        await store.send(.view(.expiryDateChanged(futureDate))) {
+            $0.expiryDate = futureDate
+            $0.validationErrors.remove(.expiryDateInvalid)
+        }
+        
+        // nilに設定（賞味期限なし）
+        await store.send(.view(.expiryDateChanged(nil))) {
+            $0.expiryDate = nil
+            $0.validationErrors.remove(.expiryDateInvalid)
         }
     }
 }
@@ -179,21 +249,3 @@ enum TestError: Error {
     case saveFailed
 }
 
-extension AddItemFeature.State {
-    init(
-        name: String = "",
-        category: Pochi.Category = .refrigerated,
-        quantity: Int = 1,
-        expiryDate: Date? = nil,
-        selectedImage: Data? = nil,
-        isLoading: Bool = false
-    ) {
-        // ❌ この初期化メソッドは実装されていない
-        self.name = name
-        self.category = category
-        self.quantity = quantity
-        self.expiryDate = expiryDate
-        self.selectedImage = selectedImage
-        self.isLoading = isLoading
-    }
-}

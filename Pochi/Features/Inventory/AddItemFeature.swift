@@ -25,6 +25,9 @@ struct AddItemFeature {
     
     enum ValidationError: Hashable {
       case nameRequired
+      case nameTooLong
+      case quantityInvalid
+      case expiryDateInvalid
     }
   }
   
@@ -36,8 +39,8 @@ struct AddItemFeature {
       case nameChanged(String)
       case categoryChanged(Category)
       case quantityChanged(Int)
-      case expiryDateChanged(Date)
-      case imageSelected(Data)
+      case expiryDateChanged(Date?)
+      case imageSelected(Data?)
       case saveTapped
       case cancelTapped
     }
@@ -51,9 +54,21 @@ struct AddItemFeature {
       switch action {
       case let .view(.nameChanged(name)):
         state.name = name
-        if !name.isEmpty {
+        
+        // 商品名必須チェック
+        if name.isEmpty {
+          state.validationErrors.insert(.nameRequired)
+        } else {
           state.validationErrors.remove(.nameRequired)
         }
+        
+        // 商品名文字数チェック（50文字以内）
+        if name.count > 50 {
+          state.validationErrors.insert(.nameTooLong)
+        } else {
+          state.validationErrors.remove(.nameTooLong)
+        }
+        
         return .none
         
       case let .view(.categoryChanged(category)):
@@ -62,10 +77,32 @@ struct AddItemFeature {
         
       case let .view(.quantityChanged(quantity)):
         state.quantity = quantity
+        
+        // 数量範囲チェック（1以上999以下）
+        if quantity < 1 || quantity > 999 {
+          state.validationErrors.insert(.quantityInvalid)
+        } else {
+          state.validationErrors.remove(.quantityInvalid)
+        }
+        
         return .none
         
       case let .view(.expiryDateChanged(date)):
         state.expiryDate = date
+        
+        // 賞味期限チェック（現在日時以降）
+        if let date = date {
+          let now = Date()
+          if date < now {
+            state.validationErrors.insert(.expiryDateInvalid)
+          } else {
+            state.validationErrors.remove(.expiryDateInvalid)
+          }
+        } else {
+          // 賞味期限を設定しない場合はエラーを削除
+          state.validationErrors.remove(.expiryDateInvalid)
+        }
+        
         return .none
         
       case let .view(.imageSelected(data)):
@@ -73,8 +110,31 @@ struct AddItemFeature {
         return .none
         
       case .view(.saveTapped):
+        // 全てのバリデーションを実行
+        state.validationErrors.removeAll()
+        
+        // 商品名バリデーション
         if state.name.isEmpty {
           state.validationErrors.insert(.nameRequired)
+        } else if state.name.count > 50 {
+          state.validationErrors.insert(.nameTooLong)
+        }
+        
+        // 数量バリデーション
+        if state.quantity < 1 || state.quantity > 999 {
+          state.validationErrors.insert(.quantityInvalid)
+        }
+        
+        // 賞味期限バリデーション
+        if let expiryDate = state.expiryDate {
+          let now = Date()
+          if expiryDate < now {
+            state.validationErrors.insert(.expiryDateInvalid)
+          }
+        }
+        
+        // バリデーションエラーがある場合は保存しない
+        if !state.validationErrors.isEmpty {
           return .none
         }
         
