@@ -90,8 +90,9 @@ struct InventoryFeatureTests {
             imageData: testItem.imageData,
             memo: testItem.memo,
             createdAt: testItem.createdAt,
-            updatedAt: Date()
+            updatedAt: fixedDate
         )
+        let fixedDate = Date(timeIntervalSince1970: 0)
         
         let store = TestStore(initialState: InventoryFeature.State(items: [testItem])) {
             InventoryFeature()
