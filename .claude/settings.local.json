@@ -27,7 +27,12 @@
       "mcp__XcodeBuildMCP__build_sim_id_proj",
       "Bash(git add:*)",
       "Bash(git push:*)",
-      "Bash(swiftc:*)"
+      "Bash(swiftc:*)",
+      "mcp__linear__get_issue",
+      "Bash(git commit:*)",
+      "Bash(gh pr create:*)",
+      "mcp__linear__list_issues",
+      "mcp__linear__update_issue"
     ],
     "deny": []
   }
