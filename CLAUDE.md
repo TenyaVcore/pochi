@@ -236,3 +236,7 @@ This is a new project in early development phase. Most features are planned but 
 - Tab-based navigation skeleton
 
 Refer to `docs/` for detailed implementation plans and UI specifications.
+
+## Development Practices
+
+- タスクを実行し始める際、PRを作成した後は必ずlinearのチケットの状態を変更して。タスクを始める際は必ず新しいブランチを作成して

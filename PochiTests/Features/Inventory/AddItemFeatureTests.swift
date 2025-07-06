@@ -107,6 +107,7 @@ struct AddItemFeatureTests {
             quantity: 2
         )
         
+        // 期待するアイテム: expectedItem (name: "牛乳", category: .refrigerated, quantity: 2)
         await store.receive(\.saveResponse.success) {
             $0.isLoading = false
         }
@@ -131,6 +132,7 @@ struct AddItemFeatureTests {
             $0.isLoading = true
         }
         
+        // 期待するエラー: TestError.saveFailed
         await store.receive(\.saveResponse.failure) {
             $0.isLoading = false
             $0.errorMessage = "保存に失敗しました"
@@ -245,7 +247,7 @@ struct AddItemFeatureTests {
 
 // MARK: - Test Helpers
 
-enum TestError: Error {
+enum TestError: Error, Equatable {
     case saveFailed
 }
 
