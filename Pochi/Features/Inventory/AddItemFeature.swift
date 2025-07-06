@@ -54,21 +54,12 @@ struct AddItemFeature {
       switch action {
       case let .view(.nameChanged(name)):
         state.name = name
+        validateName(name, state: &state)
+        return .none
         
-        // 商品名必須チェック
-        if name.isEmpty {
-          state.validationErrors.insert(.nameRequired)
-        } else {
-          state.validationErrors.remove(.nameRequired)
-        }
-        
-        // 商品名文字数チェック（50文字以内）
-        if name.count > 50 {
-          state.validationErrors.insert(.nameTooLong)
-        } else {
-          state.validationErrors.remove(.nameTooLong)
-        }
-        
+      case let .view(.saveTapped):
+        validateName(state.name, state: &state)
+        // Additional save logic here
         return .none
         
       case let .view(.categoryChanged(category)):
