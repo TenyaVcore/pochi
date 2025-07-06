@@ -16,7 +16,7 @@ struct SimpleModelTest {
     func categoryBasicTest() async throws {
         let category = Category.refrigerated
         #expect(category.rawValue == "冷蔵")
-        XCTSkip("displayNameは後で実装予定")
+        // TODO: displayNameは後で実装予定
     }
     
     @Test("Item basic test")

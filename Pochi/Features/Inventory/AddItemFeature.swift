@@ -54,12 +54,7 @@ struct AddItemFeature {
       switch action {
       case let .view(.nameChanged(name)):
         state.name = name
-        validateName(name, state: &state)
-        return .none
-        
-      case let .view(.saveTapped):
-        validateName(state.name, state: &state)
-        // Additional save logic here
+        validateName(&state)
         return .none
         
       case let .view(.categoryChanged(category)):
@@ -68,32 +63,12 @@ struct AddItemFeature {
         
       case let .view(.quantityChanged(quantity)):
         state.quantity = quantity
-        
-        // 数量範囲チェック（1以上999以下）
-        if quantity < 1 || quantity > 999 {
-          state.validationErrors.insert(.quantityInvalid)
-        } else {
-          state.validationErrors.remove(.quantityInvalid)
-        }
-        
+        validateQuantity(&state)
         return .none
         
       case let .view(.expiryDateChanged(date)):
         state.expiryDate = date
-        
-        // 賞味期限チェック（現在日時以降）
-        if let date = date {
-          let now = dateProvider.now
-          if date < now {
-            state.validationErrors.insert(.expiryDateInvalid)
-          } else {
-            state.validationErrors.remove(.expiryDateInvalid)
-          }
-        } else {
-          // 賞味期限を設定しない場合はエラーを削除
-          state.validationErrors.remove(.expiryDateInvalid)
-        }
-        
+        validateExpiryDate(&state)
         return .none
         
       case let .view(.imageSelected(data)):
@@ -102,27 +77,9 @@ struct AddItemFeature {
         
       case .view(.saveTapped):
         // 全てのバリデーションを実行
-        state.validationErrors.removeAll()
-        
-        // 商品名バリデーション
-        if state.name.isEmpty {
-          state.validationErrors.insert(.nameRequired)
-        } else if state.name.count > 50 {
-          state.validationErrors.insert(.nameTooLong)
-        }
-        
-        // 数量バリデーション
-        if state.quantity < 1 || state.quantity > 999 {
-          state.validationErrors.insert(.quantityInvalid)
-        }
-        
-        // 賞味期限バリデーション
-        if let expiryDate = state.expiryDate {
-          let now = Date()
-          if expiryDate < now {
-            state.validationErrors.insert(.expiryDateInvalid)
-          }
-        }
+        validateName(&state)
+        validateQuantity(&state)
+        validateExpiryDate(&state)
         
         // バリデーションエラーがある場合は保存しない
         if !state.validationErrors.isEmpty {
@@ -177,4 +134,46 @@ extension DependencyValues {
 
 private enum DismissKey: DependencyKey {
   static let liveValue: @Sendable () async -> Void = { }
+}
+
+// MARK: - Validation Functions
+
+private func validateName(_ state: inout AddItemFeature.State) {
+  // 商品名必須チェック
+  if state.name.isEmpty {
+    state.validationErrors.insert(.nameRequired)
+  } else {
+    state.validationErrors.remove(.nameRequired)
+  }
+  
+  // 商品名文字数チェック（50文字以内）
+  if state.name.count > 50 {
+    state.validationErrors.insert(.nameTooLong)
+  } else {
+    state.validationErrors.remove(.nameTooLong)
+  }
+}
+
+private func validateQuantity(_ state: inout AddItemFeature.State) {
+  // 数量範囲チェック（1以上999以下）
+  if state.quantity < 1 || state.quantity > 999 {
+    state.validationErrors.insert(.quantityInvalid)
+  } else {
+    state.validationErrors.remove(.quantityInvalid)
+  }
+}
+
+private func validateExpiryDate(_ state: inout AddItemFeature.State) {
+  // 賞味期限チェック（現在日時以降）
+  if let date = state.expiryDate {
+    let now = Date()
+    if date < now {
+      state.validationErrors.insert(.expiryDateInvalid)
+    } else {
+      state.validationErrors.remove(.expiryDateInvalid)
+    }
+  } else {
+    // 賞味期限を設定しない場合はエラーを削除
+    state.validationErrors.remove(.expiryDateInvalid)
+  }
 }
