@@ -7,6 +7,7 @@
 
 import Foundation
 import ComposableArchitecture
+import CasePaths
 
 // MARK: - InventoryFeature Mock Implementation
 
@@ -31,6 +32,7 @@ struct InventoryFeature {
     case addItem(PresentationAction<AddItemFeature.Action>)
     case itemDetail(PresentationAction<ItemDetailFeature.Action>)
     
+    @CasePathable
     enum View: Sendable {
       case onAppear
       case searchTextChanged(String)
