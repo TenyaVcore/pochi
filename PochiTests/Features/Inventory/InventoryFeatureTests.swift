@@ -20,7 +20,7 @@ struct InventoryFeatureTests {
             Item(name: "パン", category: .pantry, quantity: 2)
         ]
         
-        let store = TestStore(initialState: InventoryFeature.State()) {
+        let store = await TestStore(initialState: InventoryFeature.State()) {
             InventoryFeature()
         } withDependencies: {
             $0.database.fetchItems = { testItems }
@@ -44,7 +44,7 @@ struct InventoryFeatureTests {
             Item(name: "パン", category: .pantry, quantity: 2)
         ]
         
-        let store = TestStore(initialState: InventoryFeature.State(items: testItems)) {
+        let store = await TestStore(initialState: InventoryFeature.State(items: testItems)) {
             InventoryFeature()
         }
         
@@ -65,7 +65,7 @@ struct InventoryFeatureTests {
             Item(name: "アイス", category: .frozen, quantity: 3)
         ]
         
-        let store = TestStore(initialState: InventoryFeature.State(items: testItems)) {
+        let store = await TestStore(initialState: InventoryFeature.State(items: testItems)) {
             InventoryFeature()
         }
         
@@ -94,7 +94,7 @@ struct InventoryFeatureTests {
         )
         let fixedDate = Date(timeIntervalSince1970: 0)
         
-        let store = TestStore(initialState: InventoryFeature.State(items: [testItem])) {
+        let store = await TestStore(initialState: InventoryFeature.State(items: [testItem])) {
             InventoryFeature()
         } withDependencies: {
             $0.database.updateQuantity = { id, quantity in
@@ -126,7 +126,7 @@ struct InventoryFeatureTests {
             updatedAt: Date()
         )
         
-        let store = TestStore(initialState: InventoryFeature.State(items: [testItem])) {
+        let store = await TestStore(initialState: InventoryFeature.State(items: [testItem])) {
             InventoryFeature()
         } withDependencies: {
             $0.database.updateQuantity = { id, quantity in
@@ -147,7 +147,7 @@ struct InventoryFeatureTests {
     func decrementQuantityBoundary() async throws {
         let testItem = Item(name: "牛乳", category: .refrigerated, quantity: 0)
         
-        let store = TestStore(initialState: InventoryFeature.State(items: [testItem])) {
+        let store = await TestStore(initialState: InventoryFeature.State(items: [testItem])) {
             InventoryFeature()
         }
         
@@ -159,7 +159,7 @@ struct InventoryFeatureTests {
     func itemDetailNavigation() async throws {
         let testItem = Item(name: "牛乳", category: .refrigerated, quantity: 1)
         
-        let store = TestStore(initialState: InventoryFeature.State(items: [testItem])) {
+        let store = await TestStore(initialState: InventoryFeature.State(items: [testItem])) {
             InventoryFeature()
         }
         
@@ -170,7 +170,7 @@ struct InventoryFeatureTests {
     
     @Test("商品追加画面遷移テスト")
     func addItemNavigation() async throws {
-        let store = TestStore(initialState: InventoryFeature.State()) {
+        let store = await TestStore(initialState: InventoryFeature.State()) {
             InventoryFeature()
         }
         
@@ -185,7 +185,7 @@ struct InventoryFeatureTests {
             Item(name: "牛乳", category: .refrigerated, quantity: 1)
         ]
         
-        let store = TestStore(initialState: InventoryFeature.State()) {
+        let store = await TestStore(initialState: InventoryFeature.State()) {
             InventoryFeature()
         } withDependencies: {
             $0.database.fetchItems = { testItems }
@@ -203,7 +203,7 @@ struct InventoryFeatureTests {
     
     @Test("エラーハンドリングテスト")
     func errorHandling() async throws {
-        let store = TestStore(initialState: InventoryFeature.State()) {
+        let store = await TestStore(initialState: InventoryFeature.State()) {
             InventoryFeature()
         } withDependencies: {
             $0.database.fetchItems = { 

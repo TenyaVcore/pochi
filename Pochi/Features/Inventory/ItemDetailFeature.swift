@@ -49,7 +49,7 @@ struct ItemDetailFeature {
       case nameChanged(String)
       case categoryChanged(Category)
       case quantityChanged(Int)
-      case expiryDateChanged(Date)
+      case expiryDateChanged(Date?)
       case saveTapped
       case deleteTapped
       case deleteConfirmed

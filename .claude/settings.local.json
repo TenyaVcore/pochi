@@ -35,7 +35,8 @@
       "mcp__linear__update_issue",
       "mcp__linear__search_documentation",
       "mcp__linear__list_issue_statuses",
-      "Bash(swift test:*)"
+      "Bash(swift test:*)",
+      "mcp__linear__list_my_issues"
     ],
     "deny": []
   }
