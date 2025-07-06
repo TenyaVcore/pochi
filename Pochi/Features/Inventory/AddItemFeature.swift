@@ -83,7 +83,7 @@ struct AddItemFeature {
         
         // 賞味期限チェック（現在日時以降）
         if let date = date {
-          let now = Date()
+          let now = dateProvider.now
           if date < now {
             state.validationErrors.insert(.expiryDateInvalid)
           } else {
