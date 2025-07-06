@@ -32,7 +32,10 @@
       "Bash(git commit:*)",
       "Bash(gh pr create:*)",
       "mcp__linear__list_issues",
-      "mcp__linear__update_issue"
+      "mcp__linear__update_issue",
+      "mcp__linear__search_documentation",
+      "mcp__linear__list_issue_statuses",
+      "Bash(swift test:*)"
     ],
     "deny": []
   }
